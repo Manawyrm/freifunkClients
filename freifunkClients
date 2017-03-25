@@ -1,0 +1,39 @@
+#!/usr/bin/php5
+<?php
+
+$router = [
+	"f4f26de81b64" => "Alfeld-Talweg",
+	"8416f929887c" => "Alfeld-Schuetzenweg",
+	"f4f26de81ade" => "Alfeld-Sedanstrasse",
+	"8416f9af8910" => "Alfeld-Winzenburger-Strasse",
+	"30b5c2e2fd66" => "Freden-hats-Bahnhof",
+	"60e3272a61b0" => "Freden-hats-Bahnhof-2"
+];
+
+if ((count($argv) > 1) && ($argv[1] == 'config'))
+{
+    print( "graph_title Clients im Freifunk
+graph_category other
+graph_vlabel Anzahl Clients
+graph_scale no
+graph_printf %3.0lf
+graph_data_size huge
+");
+    foreach ($router as $key => $value)
+    {
+    	print ("$key.label $value
+$key.type GAUGE
+$key.draw AREASTACK
+");
+    }
+    exit();
+}
+
+
+$json = json_decode(file_get_contents("https://hannover.freifunk.net/api/nodes.json"));
+
+foreach ($router as $key => $value)
+{
+	echo "$key.value ".$json->nodes->{$key}->statistics->clients."\n";
+}
+?>
